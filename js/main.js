@@ -103,15 +103,37 @@
     { name: "Mayil Paithani", price: 24900, img: "assets/rack-peacock.webp", cat: ["Silk Sarees"], hue: 190 },
     { name: "Kumkum Bridal Brocade", price: 52000, img: "assets/rack-pink.webp", cat: ["Zari & Brocade"], hue: -35 },
     { name: "Cocoa Chiffon Drape", price: 18600, img: "assets/rack-mustard.webp", cat: ["Checked Sarees"], hue: 45 },
+    { name: "Arakku Temple Silk", price: 23800, img: "assets/rack-pink.webp", cat: ["Silk Sarees"], hue: -25 },
+    { name: "Neelam River Checks", price: 17900, img: "assets/rack-check.webp", cat: ["Checked Sarees"], hue: 160 },
+    { name: "Thamarai Lotus Border", price: 29600, img: "assets/rack-gold.webp", cat: ["Zari & Brocade"], hue: 20 },
+    { name: "Kadal Mist Soft Silk", price: 15400, img: "assets/rack-purple.webp", cat: ["Silk Sarees"], hue: 130 },
+    { name: "Pavalam Coral Pattu", price: 33500, img: "assets/rack-peacock.webp", cat: ["Silk Sarees", "Zari & Brocade"], hue: -45 },
+    { name: "Sengani Half Saree", price: 13800, img: "assets/rack-mustard.webp", cat: ["Half Sarees"], hue: -20 },
+    { name: "Vennila Ivory Checks", price: 19200, img: "assets/rack-check.webp", cat: ["Checked Sarees"], hue: 40 },
+    { name: "Rudraksha Maroon Brocade", price: 44300, img: "assets/rack-purple.webp", cat: ["Zari & Brocade"], hue: -60 },
+    { name: "Kumizh Pearl Blouse", price: 5600, img: "assets/rack-blouse-red.webp", cat: ["Half-Sleeve Blouses"], hue: 60 },
+    { name: "Thenral Sage Blouse", price: 5900, img: "assets/rack-blouse-green.webp", cat: ["Full-Sleeve Blouses"], hue: 90 },
+    { name: "Marghazhi Dawn Silk", price: 21700, img: "assets/rack-gold.webp", cat: ["Silk Sarees"], hue: -15 },
+    { name: "Aanni Festive Border", price: 27400, img: "assets/rack-pink.webp", cat: ["Zari & Brocade"], hue: 35 },
+    { name: "Ilaneer Tender Half Saree", price: 14900, img: "assets/rack-mustard.webp", cat: ["Half Sarees"], hue: 70 },
   ];
 
   const GRID = [
-    { num: "05", name: "Mayil Paithani", price: 24900, img: "assets/rack-peacock.webp" },
-    { num: "06", name: "Kumkum Bridal Brocade", price: 52000, img: "assets/rack-pink.webp" },
-    { num: "07", name: "Cocoa Chiffon Drape", price: 18600, img: "assets/rack-mustard.webp" },
-    { num: "08", name: "Sindoor Paithani", price: 38700, img: "assets/rack-purple.webp" },
-    { num: "09", name: "Swarna Kanjivaram", price: 16800, img: "assets/rack-gold.webp" },
-    { num: "10", name: "Ponni Temple Border", price: 22300, img: "assets/rack-check.webp" },
+    { num: "05", kicker: "Paithani Silk", name: "Mayil Paithani", desc: "Teal body with a red parrot-woven pallu.", price: 24900, img: "assets/rack-peacock.webp" },
+    { num: "06", kicker: "Brocade", name: "Kumkum Bridal Brocade", desc: "Red and gold brocade, full bridal drape.", price: 52000, img: "assets/rack-pink.webp" },
+    { num: "07", kicker: "Pure Chiffon", name: "Cocoa Chiffon Drape", desc: "Cocoa-brown chiffon with a floating pallu.", price: 18600, img: "assets/rack-mustard.webp" },
+    { num: "08", kicker: "Pattu", name: "Sindoor Paithani", desc: "Vermilion with hand-woven lotus motifs.", price: 38700, img: "assets/rack-purple.webp" },
+    { num: "09", kicker: "Bridal Kanjivaram", name: "Swarna Kanjivaram", desc: "Solid gold silk with temple jewellery tones.", price: 16800, img: "assets/rack-gold.webp" },
+    { num: "10", kicker: "Temple Border", name: "Ponni Temple Border", desc: "Ponni gold checks, a river at first light.", price: 22300, img: "assets/rack-check.webp" },
+  ];
+
+  const ARCHIVE = [
+    { cap: "Wedding Edit", img: "assets/look-red.jpg" },
+    { cap: "Kanchipuram Icons", img: "assets/look-coral.jpg" },
+    { cap: "Banarasi Heirlooms", img: "assets/look-purple.jpg" },
+    { cap: "Festive Radiance", img: "assets/look-ivory.jpg" },
+    { cap: "Zari Signatures", img: "assets/look-teal.jpg" },
+    { cap: "Soft Silks", img: "assets/bridal-1.jpg" },
   ];
 
   const REELS = [
@@ -308,13 +330,28 @@
     if (reduced) return;
     setInterval(() => {
       i = (i + 1) % states.length;
-      frames.forEach((f, k) => f.classList.toggle("is-on", k === i));
-      if (window.gsap) {
-        gsap.fromTo([line, sub], { y: 26, opacity: 0 }, { y: 0, opacity: 1, duration: 0.9, stagger: 0.08, ease: "power3.out" });
-      }
+      // frames cycle independently of the copy states - never index past them
+      frames.forEach((f, k) => f.classList.toggle("is-on", k === i % frames.length));
       line.innerHTML = states[i].line;
       sub.innerHTML = states[i].sub;
+      // transform-only entrance: the copy is always fully opaque in CSS, so a
+      // throttled or paused animation can never strand it invisible
+      [line, sub].forEach((el, k) => el.animate(
+        [{ transform: "translateY(26px)" }, { transform: "none" }],
+        { duration: 900, delay: k * 80, easing: "cubic-bezier(.2,.7,.2,1)" }
+      ));
     }, 6000);
+  })();
+
+  /* ============================ SPLASH ============================ */
+  (function splash() {
+    const sp = $("#splash");
+    if (!sp) return;
+    if (reduced) { sp.remove(); return; }
+    // fade is a CSS animation (compositor-driven, completes even when timers
+    // are throttled); JS only removes the node afterwards
+    sp.addEventListener("animationend", (e) => { if (e.animationName === "splashOut") sp.remove(); });
+    setTimeout(() => { const s = $("#splash"); if (s) s.remove(); }, 5000); // hard fallback
   })();
 
   /* ============================ NAV SPY ============================ */
@@ -331,6 +368,18 @@
       });
     }, { rootMargin: "-40% 0px -55% 0px" });
     sections.forEach((id) => { const el = document.getElementById(id); if (el) obs.observe(el); });
+  })();
+
+  /* ============================ THE NOOLAM ARCHIVE ============================ */
+  (function archive() {
+    const rail = $("#archiveRail");
+    if (!rail) return;
+    ARCHIVE.forEach((a) => {
+      const f = document.createElement("figure");
+      f.className = "arch-card";
+      f.innerHTML = `<img src="${a.img}" alt="${a.cap}" loading="lazy"><figcaption>${a.cap}</figcaption>`;
+      rail.appendChild(f);
+    });
   })();
 
   /* ============================ TRY THE LOOK ============================ */
@@ -634,7 +683,7 @@
     GRID.forEach((g) => {
       const c = document.createElement("article");
       c.className = "grid-card";
-      c.innerHTML = `<span class="grid-num">${g.num}</span><img src="${g.img}" alt="${g.name}" loading="lazy"><strong>${g.name}</strong><p class="grid-price">${inr(g.price)}</p><button class="btn btn-dark">Add to bag</button>`;
+      c.innerHTML = `<span class="grid-num">${g.num}</span><img src="${g.img}" alt="${g.name}" loading="lazy"><p class="grid-kicker">${g.kicker}</p><strong>${g.name}</strong><p class="grid-desc">${g.desc}</p><p class="grid-price">${inr(g.price)}</p><button class="btn btn-dark">Add to bag</button>`;
       c.querySelector(".btn").addEventListener("click", () => {
         addToBag({ name: g.name, price: g.price, img: g.img });
         toast(`<b>${g.name}</b> added to your bag.`);

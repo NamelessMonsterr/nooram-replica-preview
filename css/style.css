@@ -727,3 +727,54 @@ a{color:inherit;text-decoration:none}
 /* anchor offset for fixed nav */
 .section{scroll-margin-top:96px}
 @media (max-width:1080px){.section{scroll-margin-top:150px}}
+
+/* hero repair: contrast scrim + desc + CTAs */
+.hero-media::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,rgba(24,4,9,.62) 0%,rgba(24,4,9,.28) 45%,transparent 70%)}
+.hero-line{text-shadow:0 2px 26px rgba(20,3,7,.55)}
+.hero-sub{text-shadow:0 1px 14px rgba(20,3,7,.6)}
+.hero-desc{margin-top:12px;max-width:520px;font-size:clamp(12.5px,1.05vw,15px);line-height:1.6;color:rgba(255,255,255,.82);text-shadow:0 1px 12px rgba(20,3,7,.6)}
+.hero-ctas{display:flex;gap:12px;margin-top:22px;flex-wrap:wrap}
+.hero-ctas .btn{text-decoration:none}
+
+/* the noolam archive: six arch cards */
+.archive-rail{display:grid;grid-template-columns:repeat(6,1fr);gap:18px;margin-top:34px}
+.arch-card{margin:0;position:relative;overflow:hidden;border-radius:170px 170px 14px 14px;background:#efe6d8;box-shadow:0 14px 34px rgba(60,10,20,.14);transition:transform .5s cubic-bezier(.2,.7,.2,1),box-shadow .5s}
+.arch-card img{width:100%;aspect-ratio:3/4.4;object-fit:cover;display:block;transform:scale(1.02);transition:transform .8s cubic-bezier(.2,.7,.2,1)}
+.arch-card:hover{transform:translateY(-8px);box-shadow:0 22px 44px rgba(60,10,20,.22)}
+.arch-card:hover img{transform:scale(1.09)}
+.arch-card figcaption{position:absolute;left:0;right:0;bottom:0;padding:26px 10px 12px;text-align:center;font-size:10.5px;letter-spacing:.18em;font-weight:700;color:#fff;background:linear-gradient(transparent,rgba(24,4,9,.72))}
+@media (max-width:760px){
+  .archive-rail{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;padding-bottom:8px}
+  .arch-card{flex:0 0 62%;scroll-snap-align:center;border-radius:120px 120px 12px 12px}
+}
+
+/* devotion: numbered story cards as a horizontal rail */
+.devotion-head{margin-top:64px}
+.rack-grid{display:flex;gap:18px;overflow-x:auto;scroll-snap-type:x mandatory;padding:10px 4px 22px;scrollbar-width:thin}
+.grid-card{flex:0 0 240px;scroll-snap-align:start;position:relative;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 12px 30px rgba(60,10,20,.12);display:flex;flex-direction:column}
+.grid-card img{width:100%;aspect-ratio:3/3.6;object-fit:cover}
+.grid-card .grid-num{position:absolute;top:10px;left:10px;background:rgba(24,4,9,.55);color:#fff;font-size:11px;letter-spacing:.08em;padding:3px 9px;border-radius:999px}
+.grid-card .grid-kicker{padding:12px 14px 0;font-size:9.5px;letter-spacing:.2em;font-weight:700;color:var(--gold-2,#c8932a);text-transform:uppercase}
+.grid-card strong{padding:4px 14px 0;font-size:16px}
+.grid-card .grid-desc{padding:4px 14px 0;font-size:12px;line-height:1.5;color:#6b5a4a;flex:1}
+.grid-card .grid-price{padding:8px 14px 0;font-weight:700}
+.grid-card .btn{margin:10px 12px 12px;width:auto}
+
+/* splash: red-silk NOOLAM intro, matches reference opening */
+.splash{position:fixed;inset:0;z-index:300;display:grid;place-items:center;background:#2a060d url("../assets/hero-silk.jpg") center/cover;animation:splashOut .9s ease 1.7s forwards}
+.splash::before{content:"";position:absolute;inset:0;background:radial-gradient(90% 90% at 50% 45%,rgba(42,6,13,.25),rgba(42,6,13,.78))}
+.splash-inner{position:relative;display:flex;flex-direction:column;align-items:center;gap:14px;color:#f0c76a;animation:splashIn .9s cubic-bezier(.2,.7,.2,1) both}
+.splash-word{font-family:var(--font-display,inherit);font-size:34px;letter-spacing:.34em;font-weight:700;color:#f4e9d8;text-indent:.34em;text-align:center}
+.splash-word small{display:block;font-size:10px;letter-spacing:.5em;color:#f0c76a;margin-top:8px;font-weight:500}
+@keyframes splashIn{from{transform:scale(.86);opacity:0}to{transform:none;opacity:1}}
+@keyframes splashOut{to{opacity:0;visibility:hidden;pointer-events:none}}
+@media (prefers-reduced-motion: reduce){.splash{display:none}}
+
+/* audit mobile fixes */
+.silk-card .silk-name{padding-right:44px}
+@media (max-width:760px){
+  .nav-links{flex-wrap:nowrap;overflow-x:auto;max-width:100%;-webkit-mask-image:linear-gradient(90deg,#000 86%,transparent);mask-image:linear-gradient(90deg,#000 86%,transparent);padding-right:28px}
+  .hero-scrollcue{display:none}
+  .hero-copy{bottom:9vh;max-width:84vw}
+  .hero-ctas{margin-top:16px}
+}
