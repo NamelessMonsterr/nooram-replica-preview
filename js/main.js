@@ -115,11 +115,11 @@
   ];
 
   const REELS = [
-    { id: "lanes", name: "Old-City Lanes", badge: "REEL 01", dur: "0:38", secs: 6, place: "Old-city lanes", img: "assets/reel-lanes.jpg", video: "assets/story-lanes.mp4", kicker: "Kanchi Cotton Silk", prod: "Manjal Kattam", desc: "Turmeric-yellow checks that remember every street they have walked.", price: 18900 },
-    { id: "marina", name: "Marina Morning", badge: "REEL 02", dur: "0:31", secs: 6, place: "Marina, first light", img: "assets/reel-marina.jpg", video: "assets/story-marina.mp4", kicker: "Kora Silk", prod: "Kadal Sunrise", desc: "Sea-breeze yellow with a dawn-gold border, weightless as the hour.", price: 21400 },
-    { id: "studio", name: "Varanasi Red", badge: "REEL 03", dur: "0:24", secs: 6, place: "Studio, Varanasi red", img: "assets/reel-studio.jpg", video: "assets/story-studio.mp4", kicker: "Banarasi Katan", prod: "Kaali Banarasi", desc: "Night-black silk, a broad gold kadhua border, worn like armour.", price: 36400 },
-    { id: "lamp", name: "Lamp Room", badge: "REEL 04", dur: "0:27", secs: 6, place: "Lamp room, Kanchipuram", img: "assets/reel-lamp.jpg", video: "assets/story-lamp.mp4", kicker: "Kanjivaram", prod: "Deepam Pachai", desc: "Lamp-green silk that holds a flame's warmth long after dusk.", price: 26800 },
-    { id: "pachai", name: "Pachai Pattu", badge: "REEL 05", dur: "0:33", secs: 6, place: "Jasmine court", img: "assets/reel-pachai.jpg", video: "assets/story-pachai.mp4", kicker: "Soft Silk", prod: "Mullai Pachai", desc: "Jasmine green with a pearl-white edge, cool as a shaded court.", price: 19600 },
+    { id: "lanes", name: "Old-City Lanes", badge: "REEL 01", dur: "0:38", secs: 6, place: "Editorial fashion film", img: "assets/reel-lanes.jpg", video: "assets/story-lanes.mp4", kicker: "Kanchi Cotton Silk", prod: "Manjal Kattam", desc: "Turmeric-yellow checks that remember every street they have walked.", price: 18900 },
+    { id: "marina", name: "Marina Morning", badge: "REEL 02", dur: "0:31", secs: 6, place: "Editorial fashion film", img: "assets/reel-marina.jpg", video: "assets/story-marina.mp4", kicker: "Kora Silk", prod: "Kadal Sunrise", desc: "Sea-breeze yellow with a dawn-gold border, weightless as the hour.", price: 21400 },
+    { id: "studio", name: "Varanasi Red", badge: "REEL 03", dur: "0:24", secs: 6, place: "Editorial fashion film", img: "assets/reel-studio.jpg", video: "assets/story-studio.mp4", kicker: "Banarasi Katan", prod: "Kaali Banarasi", desc: "Night-black silk, a broad gold kadhua border, worn like armour.", price: 36400 },
+    { id: "lamp", name: "Lamp Room", badge: "REEL 04", dur: "0:27", secs: 6, place: "Editorial fashion film", img: "assets/reel-lamp.jpg", video: "assets/story-lamp.mp4", kicker: "Kanjivaram", prod: "Deepam Pachai", desc: "Lamp-green silk that holds a flame's warmth long after dusk.", price: 26800 },
+    { id: "pachai", name: "Pachai Pattu", badge: "REEL 05", dur: "0:33", secs: 6, place: "Editorial fashion film", img: "assets/reel-pachai.jpg", video: "assets/story-pachai.mp4", kicker: "Soft Silk", prod: "Mullai Pachai", desc: "Jasmine green with a pearl-white edge, cool as a shaded court.", price: 19600 },
   ];
 
   const BRIDAL = [
