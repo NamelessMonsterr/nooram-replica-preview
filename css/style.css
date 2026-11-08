@@ -603,6 +603,7 @@ a{color:inherit;text-decoration:none}
 .story-card-name{font-size:26px;font-weight:800;margin:4px 0 6px;letter-spacing:-.01em}
 .story-card-desc{font-size:13px;color:rgba(255,255,255,.85);max-width:300px}
 .story-card-note{font-size:10.5px;line-height:1.5;color:rgba(240,199,106,.8);max-width:300px;margin:6px 0 0;letter-spacing:.02em}
+.story-card-row [hidden]{display:none}
 .story-card-row{display:flex;align-items:center;gap:12px;margin-top:14px}
 .story-card-price{font-weight:800;font-size:17px}
 .story-card-row .btn{padding:10px 18px;font-size:13px}
