@@ -120,11 +120,11 @@
 
   const GRID = [
     { num: "05", kicker: "Paithani Silk", name: "Mayil Paithani", desc: "Teal body with a red parrot-woven pallu.", price: 24900, img: "assets/rack-peacock.webp" },
-    { num: "06", kicker: "Brocade", name: "Kumkum Bridal Brocade", desc: "Red and gold brocade, full bridal drape.", price: 52000, img: "assets/rack-pink.webp" },
-    { num: "07", kicker: "Pure Chiffon", name: "Cocoa Chiffon Drape", desc: "Cocoa-brown chiffon with a floating pallu.", price: 18600, img: "assets/rack-mustard.webp" },
-    { num: "08", kicker: "Pattu", name: "Sindoor Paithani", desc: "Vermilion with hand-woven lotus motifs.", price: 38700, img: "assets/rack-purple.webp" },
+    { num: "06", kicker: "Brocade", name: "Kumkum Bridal Brocade", desc: "Rani pink and gold brocade, full bridal drape.", price: 52000, img: "assets/rack-pink.webp" },
+    { num: "07", kicker: "Half Saree", name: "Manjal Maroon Lehenga", desc: "Turmeric-yellow lehenga with a deep maroon border.", price: 18600, img: "assets/rack-mustard.webp" },
+    { num: "08", kicker: "Pattu", name: "Royal Purple Paithani", desc: "Deep purple silk with hand-woven lotus motifs.", price: 38700, img: "assets/rack-purple.webp" },
     { num: "09", kicker: "Bridal Kanjivaram", name: "Swarna Kanjivaram", desc: "Solid gold silk with temple jewellery tones.", price: 16800, img: "assets/rack-gold.webp" },
-    { num: "10", kicker: "Temple Border", name: "Ponni Temple Border", desc: "Ponni gold checks, a river at first light.", price: 22300, img: "assets/rack-check.webp" },
+    { num: "10", kicker: "Checked Silk", name: "Madras Check Silk", desc: "Red, indigo and gold madras checks, a temple-town classic.", price: 22300, img: "assets/rack-check.webp" },
   ];
 
   const ARCHIVE = [
@@ -393,13 +393,13 @@
       card.className = "look-card";
       card.setAttribute("role", "option");
       card.setAttribute("aria-label", `Look ${li + 1}, ${look.name}`);
-      card.innerHTML = `<img src="${look.img}" alt="${look.name} look"><span class="look-tag">Look 0${li + 1} · ${look.name}</span>`;
+      card.innerHTML = `<img src="${look.img}" alt="${look.name} look" draggable="false"><span class="look-tag">Look 0${li + 1} · ${look.name}</span>`;
       card.addEventListener("click", () => select(card, look, li));
       rail.appendChild(card);
     });
     const railDrift = drift(rail, 0.5, () => rail.classList.contains("has-active"));
 
-    function select(card, look, li) {
+    function select(card, look, li, fromRail) {
       if (active === card) { // tap again to release
         card.classList.remove("is-active");
         rail.classList.remove("has-active");
@@ -411,7 +411,10 @@
       active = card; activeLook = look;
       card.classList.add("is-active");
       rail.classList.add("has-active");
-      card.scrollIntoView({ behavior: reduced ? "auto" : "smooth", inline: "center", block: "nearest" });
+      if (!fromRail) {
+        progScrollUntil = performance.now() + 900; // rail coupling stays out of programmatic scrolls
+        card.scrollIntoView({ behavior: reduced ? "auto" : "smooth", inline: "center", block: "nearest" });
+      }
 
       // hotspots
       look.pieces.forEach((p, pi) => {
@@ -462,6 +465,76 @@
       $$("li", piecesEl).forEach((row) => row.classList.toggle("is-on", on && +row.dataset.pi === pi));
       if (active) $$(".hotspot", active).forEach((h, hi) => h.classList.toggle("is-on", on && hi === pi));
     }
+
+    // ---- rail drag: 1:1 tracking, momentum, and drag-focus coupling ----
+    // Dragging the rail (mouse) tracks the pointer exactly and glides on
+    // release; the look nearest the rail's center becomes the focused look,
+    // driving the same panel/isolation as a tap. Touch keeps native pan +
+    // momentum; coupling listens to the scroll either way, but only while
+    // the user is actively interacting (auto-drift never steals focus).
+    let progScrollUntil = 0, interactUntil = 0, coupleRaf = 0;
+    function centerCard() {
+      const mid = rail.getBoundingClientRect().left + rail.clientWidth / 2;
+      let best = null, bd = 1e9;
+      $$(".look-card", rail).forEach((c, ci) => {
+        const r = c.getBoundingClientRect();
+        const d = Math.abs(r.left + r.width / 2 - mid);
+        if (d < bd) { bd = d; best = [c, ci]; }
+      });
+      return best;
+    }
+    function coupleFocus() {
+      const hit = centerCard();
+      if (!hit) return;
+      const [c, ci] = hit;
+      if (c !== active) select(c, LOOKS[ci], ci, true);
+    }
+    rail.addEventListener("scroll", () => {
+      if (performance.now() > interactUntil || performance.now() < progScrollUntil) return;
+      if (coupleRaf) return;
+      coupleRaf = requestAnimationFrame(() => { coupleRaf = 0; if (performance.now() < interactUntil) coupleFocus(); });
+    }, { passive: true });
+    (function railDrag() {
+      let down = false, startX = 0, startL = 0, lastX = 0, lastT = 0, vel = 0, moved = 0, momRaf = 0;
+      rail.addEventListener("dragstart", (e) => e.preventDefault()); // native image drag would cancel the pointer stream
+      rail.addEventListener("pointercancel", () => { down = false; });
+      rail.addEventListener("pointerdown", (e) => {
+        if (e.pointerType !== "mouse" || e.button !== 0) return;
+        down = true; moved = 0; startX = lastX = e.clientX; startL = rail.scrollLeft;
+        lastT = performance.now(); vel = 0;
+        cancelAnimationFrame(momRaf);
+        interactUntil = performance.now() + 4000;
+        railDrift.hold(4000);
+      });
+      window.addEventListener("pointermove", (e) => {
+        if (!down) return;
+        const dx = e.clientX - startX;
+        moved = Math.max(moved, Math.abs(dx));
+        rail.scrollLeft = startL - dx; // 1:1
+        const now = performance.now(), dt = now - lastT;
+        if (dt > 0) vel = 0.8 * vel + 0.2 * ((e.clientX - lastX) / dt);
+        lastX = e.clientX; lastT = now;
+        interactUntil = now + 1200;
+        railDrift.hold(1200);
+      });
+      window.addEventListener("pointerup", () => {
+        if (!down) return;
+        down = false;
+        let v = -vel * 16; // px per frame at release
+        const glide = () => {
+          if (Math.abs(v) < 0.4) return;
+          rail.scrollLeft += v;
+          v *= 0.93;
+          interactUntil = performance.now() + 400;
+          momRaf = requestAnimationFrame(glide);
+        };
+        if (Math.abs(v) > 1.5) momRaf = requestAnimationFrame(glide);
+      });
+      // a real drag is not a tap - don't let the release click select/deselect
+      rail.addEventListener("click", (e) => {
+        if (moved > 6) { e.stopPropagation(); e.preventDefault(); moved = 0; }
+      }, true);
+    })();
 
     $("#addLookBtn").addEventListener("click", () => {
       if (!activeLook) { toast("Tap a look first - the pieces will pin themselves."); return; }
@@ -1027,10 +1100,27 @@
   /* ============================ SCROLL MOTION ============================ */
   if (window.gsap && window.ScrollTrigger && !reduced) {
     gsap.registerPlugin(ScrollTrigger);
-    // hero parallax: the showroom sinks, the line lifts away
-    gsap.to(".hero-media", { yPercent: 16, ease: "none", scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: true } });
-    gsap.to(".hero-copy", { yPercent: -46, opacity: 0, ease: "none", scrollTrigger: { trigger: ".hero", start: "top top", end: "62% top", scrub: true } });
-    gsap.to(".hero-scrollcue", { opacity: 0, ease: "none", scrollTrigger: { trigger: ".hero", start: "top top", end: "30% top", scrub: true } });
+    // hero parallax: hand-rolled from live geometry - a cached-measurement
+    // scrub controller can strand the copy faded; this reads the real rect on
+    // every scroll frame, so fresh load and scroll-back always restore it
+    (function heroScrollFX() {
+      const media = $(".hero-media"), copy = $(".hero-copy"), cue = $(".hero-scrollcue"), heroEl = $(".hero");
+      let ticking = false;
+      function apply() {
+        ticking = false;
+        const r = heroEl.getBoundingClientRect();
+        const h = heroEl.offsetHeight || 1;
+        const prog = Math.min(Math.max(-r.top / h, 0), 1);
+        media.style.transform = `translateY(${prog * 16}%)`;
+        const cp = Math.min(prog / 0.62, 1);
+        copy.style.transform = `translateY(${-46 * cp}%)`;
+        copy.style.opacity = String(1 - cp);
+        if (cue) cue.style.opacity = String(1 - Math.min(prog / 0.3, 1));
+      }
+      window.addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(apply); } }, { passive: true });
+      window.addEventListener("resize", apply);
+      apply();
+    })();
     // entrances
     $$(".section-head, .grid-card, .drape-still, .drape-film, .look-panel, .rack-detail, .weave-console, .bridal-foot, .drape-cta, .rack-filters, .rack-count").forEach((el) => {
       gsap.fromTo(el, { y: 34, opacity: 0 }, {

@@ -761,7 +761,7 @@ a{color:inherit;text-decoration:none}
 .grid-card .btn{margin:10px 12px 12px;width:auto}
 
 /* splash: red-silk NOOLAM intro, matches reference opening */
-.splash{position:fixed;inset:0;z-index:300;display:grid;place-items:center;background:#2a060d url("../assets/hero-silk.jpg") center/cover;animation:splashOut .9s ease 1.7s forwards}
+.splash{position:fixed;inset:0;z-index:300;display:grid;place-items:center;pointer-events:none;background:#2a060d url("../assets/hero-silk.jpg") center/cover;animation:splashOut .9s ease 1.7s forwards}
 .splash::before{content:"";position:absolute;inset:0;background:radial-gradient(90% 90% at 50% 45%,rgba(42,6,13,.25),rgba(42,6,13,.78))}
 .splash-inner{position:relative;display:flex;flex-direction:column;align-items:center;gap:14px;color:#f0c76a;animation:splashIn .9s cubic-bezier(.2,.7,.2,1) both}
 .splash-word{font-family:var(--font-display,inherit);font-size:34px;letter-spacing:.34em;font-weight:700;color:#f4e9d8;text-indent:.34em;text-align:center}
@@ -778,3 +778,11 @@ a{color:inherit;text-decoration:none}
   .hero-copy{bottom:9vh;max-width:84vw}
   .hero-ctas{margin-top:16px}
 }
+
+/* look rail drag: no native drag/selection fighting pointer tracking */
+.look-rail{user-select:none;-webkit-user-select:none}
+.look-card img{-webkit-user-drag:none;pointer-events:none}
+.look-card .look-tag{pointer-events:none}
+
+/* demo-catalogue framing, deliberately quiet */
+.demo-note{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#a08d7a;margin-top:10px}
