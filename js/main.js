@@ -751,15 +751,22 @@
   $("#storyTapPrev").addEventListener("click", () => stepStory(-1));
   $("#storyPeekNext").addEventListener("click", () => stepStory(1));
   $("#storyPeekPrev").addEventListener("click", () => stepStory(-1));
-  // hold to pause
+  // hold to pause, swipe down to close
+  let storyPress = null;
   story.addEventListener("pointerdown", (e) => {
     if (e.target.closest("button, a")) return;
+    storyPress = { x: e.clientX, y: e.clientY };
     storyPaused = true;
     story.classList.add("is-paused");
     clearTimeout(storyTimer);
     if (story._vid) story._vid.pause();
   });
-  story.addEventListener("pointerup", () => {
+  story.addEventListener("pointerup", (e) => {
+    if (storyPress) {
+      const dy = e.clientY - storyPress.y, dx = e.clientX - storyPress.x;
+      storyPress = null;
+      if (dy > 90 && dy > Math.abs(dx) * 1.2) { storyPaused = false; story.classList.remove("is-paused"); closeStory(); return; }
+    }
     if (!storyPaused) return;
     storyPaused = false;
     story.classList.remove("is-paused");

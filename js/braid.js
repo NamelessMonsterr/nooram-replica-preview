@@ -8,8 +8,24 @@ const canvas = document.getElementById("braidCanvas");
 const stage = canvas.parentElement;
 const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, preserveDrawingBuffer: true });
-renderer.setPixelRatio(Math.min(devicePixelRatio, innerWidth < 760 ? 1.3 : 2));
+// Detect software GL (SwiftShader/llvmpipe): there, fill rate and fragment
+// shader cost dominate, so drop MSAA, device-pixel-ratio scaling, anisotropy
+// and geometry density. Hardware keeps the full-quality path.
+function softwareGL() {
+  try {
+    const c = document.createElement("canvas");
+    const g = c.getContext("webgl") || c.getContext("experimental-webgl");
+    if (!g) return true;
+    const ext = g.getExtension("WEBGL_debug_renderer_info");
+    const name = ext ? g.getParameter(ext.UNMASKED_RENDERER_WEBGL) : "";
+    g.getExtension("WEBGL_lose_context")?.loseContext();
+    return /swiftshader|llvmpipe|software|basic render/i.test(String(name));
+  } catch { return true; }
+}
+const SOFT = softwareGL();
+
+const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: !SOFT, preserveDrawingBuffer: false, powerPreference: "high-performance" });
+renderer.setPixelRatio(SOFT ? 0.65 : Math.min(devicePixelRatio, innerWidth < 760 ? 1.3 : 2));
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(33, 2, 0.1, 100);
 camera.position.set(0, 0.1, 9.8);
@@ -39,7 +55,7 @@ const RADIUS = 0.85;       // strand orbit radius around spine
 const WIDTH = 1.85;        // ribbon width (broad fabric band)
 const THICK = 0.05;        // ribbon thickness (thin)
 const TURNS = 1.45;        // braid twists along the spine - long lazy pitch, not corkscrew
-const SAMPLES = innerWidth < 760 ? 150 : 240;
+const SAMPLES = SOFT ? 100 : innerWidth < 760 ? 150 : 240;
 
 // Center of strand i at parameter t in [0,1]. The traveling wave itself lives
 // in the vertex shader (uFlow) so the CPU never rebuilds geometry.
@@ -121,9 +137,11 @@ function buildBraid(textures) {
     tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
     tex.repeat.set(1, 1);
     tex.colorSpace = THREE.SRGBColorSpace;
-    tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
-    const mat = new THREE.MeshStandardMaterial({
-      map: tex, roughness: 0.62, metalness: 0.1, side: THREE.DoubleSide,
+    tex.anisotropy = SOFT ? 1 : Math.min(4, renderer.capabilities.getMaxAnisotropy());
+    // Lambert: matte-silk diffuse response at a fraction of Standard's
+    // fragment cost - the difference is invisible under this light rig.
+    const mat = new THREE.MeshLambertMaterial({
+      map: tex, side: THREE.DoubleSide, emissive: 0x1a0d08,
     });
     // broad traveling wave sweeping the full width, like silk pulled through
     // air - displaced on the GPU so the flow costs no per-frame CPU work

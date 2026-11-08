@@ -560,6 +560,7 @@ a{color:inherit;text-decoration:none}
 .story{
   position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;gap:26px;
   background:radial-gradient(120% 120% at 50% 40%,#4a0d18 0%,#1c0509 70%);
+  touch-action:none;
 }
 .story[hidden]{display:none}
 .story-frame{
