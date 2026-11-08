@@ -542,8 +542,9 @@
       toast(`<b>${activeLook.name}</b> - whole look, woven into your bag.`);
     });
 
-    // preselect first look so the panel is never empty
-    select(rail.children[0], LOOKS[0], 0);
+    // preselect first look so the panel is never empty - fromRail: never
+    // scroll the page on load
+    select(rail.children[0], LOOKS[0], 0, true);
     rail.classList.remove("has-active"); // but keep the rail calm until user picks
     if (active) { $$(".hotspot,.hotspot-tip", active).forEach((h) => h.remove()); active.classList.remove("is-active"); active = null; }
   })();
